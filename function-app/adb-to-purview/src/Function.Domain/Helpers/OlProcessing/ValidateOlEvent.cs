@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using Function.Domain.Models.OL;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Function.Domain.Helpers.Parser
 {
@@ -36,13 +35,18 @@ namespace Function.Domain.Helpers.Parser
         /// </summary>
         /// <param name="olEvent">OpenLineage Event message</param>
         /// <returns>true if input is valid, false if not</returns>
-        public bool Validate(Event olEvent){
+        public bool Validate(Event olEvent)
+        {
+            if (olEvent.Job.Namespace.Contains("azuresynapsespark"))
+            {
+                return ValidateSynapseOlEvent(olEvent);
+            }
             if (olEvent.Inputs.Count > 0 && olEvent.Outputs.Count > 0)
             {
                 // Need to rework for multiple inputs and outputs in one packet - possibly combine and then hash
                 if (InOutEqual(olEvent))
-                { 
-                    return false; 
+                {
+                    return false;
                 }
                 if (olEvent.EventType == "START")
                 {
@@ -62,6 +66,17 @@ namespace Function.Domain.Helpers.Parser
                 }
             }
             return false;
+        }
+
+        private bool ValidateSynapseOlEvent(Event olEvent)
+        {
+            // So far, we have only seen START and COMPLETE events where we either have inputs or outputs. 
+            //Assumption is that all messages must be allowed as long as there is an input / output in order to correlate them at the end....
+            if (olEvent.Inputs.Count == 0 && olEvent.Outputs.Count == 0)
+            {
+                return false;
+            }
+            return true;
         }
 
         private bool InOutEqual(Event ev)

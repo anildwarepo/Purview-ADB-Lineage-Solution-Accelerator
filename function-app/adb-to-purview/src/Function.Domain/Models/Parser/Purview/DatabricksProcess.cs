@@ -13,17 +13,4 @@ namespace Function.Domain.Models.Purview
         [JsonProperty("columnAttributes")]
         public List<ColumnLevelAttributes> ColumnLevel = new List<ColumnLevelAttributes>();
     }
-
-
-      public class SynapseProcess
-    {
-        [JsonProperty("typeName")]
-        public string TypeName = "azure_synapse_process";
-        [JsonProperty("attributes")]
-        public SynapseProcessAttributes Attributes = new SynapseProcessAttributes();
-        [JsonProperty("relationshipAttributes")]
-        public SynapseProcessRelationshipAttributes RelationshipAttributes = new SynapseProcessRelationshipAttributes();
-        [JsonProperty("columnAttributes")]
-        public List<ColumnLevelAttributes> ColumnLevel = new List<ColumnLevelAttributes>();
-    }
 }
